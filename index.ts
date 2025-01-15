@@ -8,6 +8,10 @@ import {
   Tool,
 } from "@modelcontextprotocol/sdk/types.js";
 
+// TODO:
+// - privide examples of all the different types (prompt, tool, resource, others?)
+// - example of API and loading API key from env
+
 const server = new Server(
   {
     name: "mcp-starter",
