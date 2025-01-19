@@ -7,7 +7,7 @@
     "make-executable": "node -e \"fs.chmodSync('dist/index.cjs', '755');\" --require fs",
     "build": "esbuild index.ts --outfile=dist/index.cjs --bundle --platform=node --format=cjs --banner:js='#!/usr/bin/env node' && npm run make-executable",
     "watch": "esbuild index.ts --outfile=dist/index.cjs --bundle --platform=node --format=cjs --banner:js='#!/usr/bin/env node' --watch",
-    "inspect": "npx @modelcontextprotocol/inspector dist/index.cjs",
+    "inspect": "npx @modelcontextprotocol/inspector node dist/index.cjs",
     "dev": "concurrently \"npm run watch\" \"npm run inspect\"",
     "prepublishOnly": "npm run build"
   },
