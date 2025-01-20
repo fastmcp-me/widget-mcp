@@ -12,7 +12,7 @@ A minimal [ModelContextProtocol](https://modelcontextprotocol.io) server templat
 
 1. Download and install Claude desktop app from [claude.ai/download](https://claude.ai/download)
 
-2. Install dependencies and build:
+2. Clone the repo, install dependencies and build:
 
 ```
 npm install
@@ -51,9 +51,7 @@ If you have existing MCP servers, add the `mcp-starter` block to your existing c
 
 6. If this is all working, you should be able to develop your MCP server using `npm run dev` and test it in Claude. You'll need to restart Claude each time to restart the MCP server.
 
-## Development Setup
-
-### Running with Inspector
+## Developing with Inspector
 
 For development and debugging purposes, you can use the MCP Inspector tool. The Inspector provides a visual interface for testing and monitoring MCP server interactions.
 
@@ -64,25 +62,33 @@ To test locally with Inspector:
 npm run inspect
 ```
 
+To build on file changes run:
+```
+npm run watch
+```
+
 Or run both the watcher and inspector:
 ```
 npm run dev
 ```
 
-### Local Development
+## Publishing
 
-1. Clone the repository
-2. Install dependencies:
-```bash
-npm install
+Once you're ready to distribute your server, it's simple! 
+
+1. Set up an [NPM](https://www.npmjs.com/) account.
+
+2. Run `npm publish`. This will publish a package using the project name in `package.json`
+
+3. Once published, others can install the server with a config entry like:
+
 ```
-3. Build the project:
-```bash
-npm run build
-```
-4. For development with auto-rebuilding:
-```bash
-npm run watch
+"mcpServers": {
+  "<your-package-name>": {
+    "command": "npx",
+    "args": ["<your-package-name>"]
+  }
+}
 ```
 
 ## Available Tools
