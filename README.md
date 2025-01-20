@@ -8,28 +8,48 @@ A minimal [ModelContextProtocol](https://modelcontextprotocol.io) server templat
 - TypeScript + esbuild setup
 - Development tools preconfigured
 
-## Setup with Claude
+## Setup to build and run with Claude
 
 1. Download and install Claude desktop app from [claude.ai/download](https://claude.ai/download)
 
-2. Configure Claude to use this MCP server. If this is your first MCP server, run:
+2. Install dependencies and build:
+
+```
+npm install
+npm run build
+```
+
+3. Configure Claude to use this MCP server. If this is your first MCP server, in the root of this project run:
 
 ```bash
 echo '{
   "mcpServers": {
     "mcp-starter": {
-      "command": "npx",
-      "args": ["mcp-starter"]
+      "command": "node",
+      "args": ["'$PWD'/dist/index.cjs"]
     }
   }
 }' > ~/Library/Application\ Support/Claude/claude_desktop_config.json
 ```
 
-If you have existing MCP servers, add the `mcp-starter` block to your existing config.
+This should result in an entry in your `claude_desktop_config.json` like:
 
-3. Restart Claude Desktop.
+```json
+"mcpServers": {
+  "mcp-starter": {
+    "command": "node",
+    "args": ["/Users/matt/code/mcp-starter/dist/index.cjs"]
+  }
+}
+```
 
-4. Look for the hammer icon with the number of available tools in Claude's interface to confirm the server is running.
+If you have existing MCP servers, add the `mcp-starter` block to your existing config. It's an important detail that the `args` is the path to `<path_to_repo_on_your_machine>/mcp-starter/dist/index.cjs`.
+
+4. Restart Claude Desktop.
+
+5. Look for the hammer icon with the number of available tools in Claude's interface to confirm the server is running.
+
+6. If this is all working, you should be able to develop your MCP server using `npm run dev` and test it in Claude. You'll need to restart Claude each time to restart the MCP server.
 
 ## Development Setup
 
