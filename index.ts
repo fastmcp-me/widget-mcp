@@ -1,69 +1,38 @@
-import { Server } from "@modelcontextprotocol/sdk/server/index.js";
+import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import {
-  CallToolRequestSchema,
-  ErrorCode,
-  ListToolsRequestSchema,
-  McpError,
-  Tool,
-} from "@modelcontextprotocol/sdk/types.js";
+import { z } from "zod";
 
-// TODO:
-// - privide examples of all the different types (prompt, tool, resource, others?)
-// - example of API and loading API key from env
-
-const server = new Server(
+const server = new McpServer(
   {
     name: "mcp-starter",
-    version: "0.1.0",
+    version: "0.2.0",
   },
   {
     capabilities: {
-      resources: {},
       tools: {},
       logging: {},
     },
   }
 );
 
-const HELLO_TOOL: Tool = {
-  name: "hello_tool",
-  description: "Hello tool",
-  inputSchema: {
-    type: "object",
-    properties: {
-      name: {
-        type: "string",
-        description: "The name of the person to greet",
-      },
-    },
-    required: ["name"],
+server.tool(
+  "hello_tool",
+  "Hello tool",
+  {
+    name: z.string().describe("The name of the person to greet"),
   },
-};
-
-server.setRequestHandler(ListToolsRequestSchema, async () => ({
-  tools: [HELLO_TOOL],
-}));
-
-function doHello(name: string) {
-  return {
-    message: `Hello, ${name}!`,
-  };
-}
-
-server.setRequestHandler(CallToolRequestSchema, async (request) => {
-  if (request.params.name === "hello_tool") {
-    console.error("Hello tool", request.params.arguments);
-    const input = request.params.arguments as { name: string };
-    return doHello(input.name);
+  async ({ name }) => {
+    console.error("Hello tool", { name });
+    return {
+      content: [
+        {
+          type: "text",
+          text: `Hello, ${name}!`,
+        },
+      ],
+    };
   }
-
-  throw new McpError(ErrorCode.MethodNotFound, `Unknown tool: ${request.params.name}`);
-});
-
-server.onerror = (error: any) => {
-  console.error(error);
-};
+);
 
 process.on("SIGINT", async () => {
   await server.close();
