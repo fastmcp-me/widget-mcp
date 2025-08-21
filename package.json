@@ -1,20 +1,23 @@
 {
-  "name": "mcp-starter",
+  "name": "widget-mcp",
   "version": "0.1.0",
-  "description": "ModelContextProtocol starter server",
+  "description": "UI widget for your LLM",
   "type": "module",
   "module": "index.ts",
   "scripts": {
     "dev": "npx @smithery/cli dev",
     "build": "npx @smithery/cli build",
-    "start": "node .smithery/index.cjs"
+    "start": "node .smithery/index.cjs",
+    "check": "tsc --noEmit"
   },
   "dependencies": {
+    "@mcp-ui/server": "^5.2.0",
     "@modelcontextprotocol/sdk": "^1.17.3",
     "zod": "^3.25.76"
   },
   "devDependencies": {
     "prettier": "^3.4.2",
-    "tsx": "^4.20.4"
+    "tsx": "^4.20.4",
+    "typescript": "^5.9.2"
   }
 }
