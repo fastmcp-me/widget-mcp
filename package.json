@@ -1,30 +1,20 @@
 {
   "name": "mcp-starter",
-  "version": "0.2.0",
+  "version": "0.1.0",
   "description": "ModelContextProtocol starter server",
   "type": "module",
+  "module": "index.ts",
   "scripts": {
-    "make-executable": "node -e \"fs.chmodSync('dist/index.cjs', '755');\" --require fs",
-    "build": "esbuild index.ts --outfile=dist/index.cjs --bundle --platform=node --format=cjs --banner:js='#!/usr/bin/env node' && npm run make-executable",
-    "watch": "esbuild index.ts --outfile=dist/index.cjs --bundle --platform=node --format=cjs --banner:js='#!/usr/bin/env node' --watch",
-    "inspect": "npx @modelcontextprotocol/inspector node dist/index.cjs",
-    "dev": "concurrently \"npm run watch\" \"npm run inspect\"",
-    "prepublishOnly": "npm run build"
+    "dev": "npx @smithery/cli dev",
+    "build": "npx @smithery/cli build",
+    "start": "node .smithery/index.cjs"
   },
-  "bin": {
-    "mcp-starter": "./dist/index.cjs"
-  },
-  "files": [
-    "dist"
-  ],
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.17.3"
+    "@modelcontextprotocol/sdk": "^1.17.3",
+    "zod": "^3.25.76"
   },
   "devDependencies": {
-    "@types/node": "^22.10.1",
-    "concurrently": "^8.2.2",
-    "esbuild": "^0.24.0",
     "prettier": "^3.4.2",
-    "typescript": "^5.3.3"
+    "tsx": "^4.20.4"
   }
 }
