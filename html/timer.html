@@ -366,8 +366,8 @@
         this.initialTime = this.mode === 'stopwatch' ? 0 : TIMER_CONFIG.defaultInitialTime;
         this.totalTime = this.initialTime;
         this.currentTime = this.initialTime;
-        this.currentMilliseconds = 0; // Track milliseconds for smooth progress
-        this.lastUpdateTime = null; // Track when we last updated for smooth animation
+        this.currentMilliseconds = 0;
+        this.lastUpdateTime = null;
         this.isRunning = false;
         this.isMuted = false;
         this.interval = null;
@@ -386,9 +386,6 @@
         this.minutesInput = document.getElementById( 'minutes' );
         this.secondsInput = document.getElementById( 'seconds' );
         this.progressRing = document.querySelector( '.progress-ring-progress' );
-
-
-        // Calculate circle circumference for progress ring
         this.circumference = 2 * Math.PI * TIMER_CONFIG.progressRingRadius;
         this.progressRing.style.strokeDasharray = `0 ${this.circumference}`;
       }
@@ -398,13 +395,11 @@
         this.resetBtn.addEventListener( 'click', () => this.resetTimer() );
         this.muteBtn.addEventListener( 'click', () => this.toggleMute() );
 
-        // Make timer display editable on click
         this.display.addEventListener( 'click', () => this.makeEditable() );
         this.display.addEventListener( 'blur', () => this.finishEditing() );
         this.display.addEventListener( 'keydown', ( e ) => this.handleTimerInput( e ) );
         this.display.addEventListener( 'input', ( e ) => this.handleTimerInputChange( e ) );
 
-        // Keyboard shortcuts
         document.addEventListener( 'keydown', ( e ) => {
           if ( e.code === 'Space' ) {
             e.preventDefault();
@@ -419,13 +414,12 @@
 
       setTime( minutes, seconds ) {
         if ( this.mode === 'stopwatch' ) {
-          // For stopwatch mode, don't allow time setting - it should start at 0
           return;
         }
-        this.initialTime = minutes * 60 + seconds; // Update the initial time
+        this.initialTime = minutes * 60 + seconds;
         this.totalTime = this.initialTime;
         this.currentTime = this.initialTime;
-        this.currentMilliseconds = 0; // Reset milliseconds
+        this.currentMilliseconds = 0;
         this.updateDisplay();
         this.updateProgress();
       }
@@ -454,10 +448,8 @@
           const deltaTime = now - this.lastUpdateTime;
           this.lastUpdateTime = now;
 
-          // Update milliseconds for smooth progress
           this.currentMilliseconds += deltaTime;
 
-          // Check if we've completed a full second
           if ( this.currentMilliseconds >= 1000 ) {
             const secondsElapsed = Math.floor( this.currentMilliseconds / 1000 );
             this.currentMilliseconds = this.currentMilliseconds % 1000;
@@ -479,7 +471,7 @@
           }
 
           this.updateProgress();
-        }, 50 ); // Update every 50ms for smooth animation
+        }, 50 );
       }
 
       pauseTimer() {
@@ -490,20 +482,19 @@
 
       resetTimer() {
         this.pauseTimer();
-        this.currentTime = this.initialTime; // Reset to the initial time, not totalTime
-        this.currentMilliseconds = 0; // Reset milliseconds
+        this.currentTime = this.initialTime;
+        this.currentMilliseconds = 0;
         this.updateDisplay();
         this.updateProgress();
       }
 
       async completeTimer() {
-        // Only complete for timer mode, not stopwatch
         if ( this.mode !== 'timer' ) return;
 
         this.pauseTimer();
 
         for ( let i = 0; i < 4; i++ ) {
-          this.playSound();
+          await this.playSound();
           this.progressRing.style.stroke = '#ea4335';
           await new Promise( resolve => setTimeout( resolve, 1000 ) );
           this.progressRing.style.stroke = '#4285f4';
@@ -521,17 +512,14 @@
         let progress = 0;
 
         if ( this.mode === 'stopwatch' ) {
-          // Calculate fractional time including milliseconds for smooth animation
           const fractionalTime = this.currentTime + ( this.currentMilliseconds / 1000 );
-          // For stopwatch, show progress as a percentage of 60 seconds and wrap around
           const secondsInMinute = fractionalTime % 60;
           progress = secondsInMinute / 60;
         } else {
-          // For timer, calculate remaining fractional time (subtract milliseconds for smooth countdown)
           const fractionalTimeRemaining = Math.max( 0, this.currentTime - ( this.currentMilliseconds / 1000 ) );
-          // Progress should increase as time runs out (from 0 to 1)
+
           progress = this.initialTime > 0 ? ( this.initialTime - fractionalTimeRemaining ) / this.initialTime : 0;
-          progress = Math.max( 0, Math.min( 1, progress ) ); // Clamp between 0 and 1
+          progress = Math.max( 0, Math.min( 1, progress ) );
         }
 
         const offset = this.circumference * progress;
@@ -569,7 +557,6 @@
       }
 
       updateMuteButtonVisibility() {
-        // Hide mute button for stopwatch mode
         if ( this.mode === 'stopwatch' ) {
           this.muteBtn.style.display = 'none';
         } else {
@@ -580,15 +567,12 @@
 
 
       makeEditable() {
-        // Don't allow editing in stopwatch mode
         if ( this.mode === 'stopwatch' ) {
           return;
         }
 
-        // Store if timer was running before editing
         this.wasRunningBeforeEdit = this.isRunning;
 
-        // Pause timer if it's running
         if ( this.isRunning ) {
           this.pauseTimer();
         }
@@ -597,7 +581,6 @@
         this.display.focus();
         this.display.select();
 
-        // Initialize editing state
         this.editingDigits = this.display.value.replace( ':', '' ).padStart( 4, '0' );
       }
 
@@ -609,7 +592,6 @@
           return;
         }
 
-        // Only allow numeric input and some control keys
         if ( !/^\d$/.test( e.key ) &&
           !['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab', 'Escape'].includes( e.key ) ) {
           e.preventDefault();
@@ -623,31 +605,26 @@
           e.preventDefault();
           this.removeDigit();
         } else if ( e.key === 'Escape' ) {
-          // Cancel editing and revert to original time
           this.updateDisplay();
           this.display.blur();
         }
       }
 
       handleTimerInputChange( e ) {
-        // Prevent manual input changes, we handle everything through keydown
         e.preventDefault();
       }
 
       addDigit( digit ) {
-        // Shift existing digits left and add new digit
         this.editingDigits = this.editingDigits.slice( 1 ) + digit;
         this.updateEditingDisplay();
       }
 
       removeDigit() {
-        // Shift digits right and add zero at the beginning
         this.editingDigits = '0' + this.editingDigits.slice( 0, 3 );
         this.updateEditingDisplay();
       }
 
       updateEditingDisplay() {
-        // Format as MM:SS
         const minutes = this.editingDigits.slice( 0, 2 );
         const seconds = this.editingDigits.slice( 2, 4 );
         this.display.value = `${minutes}:${seconds}`;
@@ -685,31 +662,62 @@
         }
       }
 
-      playSound() {
+      async playSound() {
         if ( this.isMuted || this.mode === 'stopwatch' ) return;
 
-        // Create audio context and play a pleasant notification sound
-        try {
-          const audioContext = new ( window.AudioContext || window.webkitAudioContext )();
-          const oscillator = audioContext.createOscillator();
-          const gainNode = audioContext.createGain();
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        const audioContext = new AudioCtx();
 
-          oscillator.connect( gainNode );
-          gainNode.connect( audioContext.destination );
-
-          oscillator.frequency.setValueAtTime( 800, audioContext.currentTime );
-          oscillator.frequency.setValueAtTime( 600, audioContext.currentTime + 0.1 );
-          oscillator.frequency.setValueAtTime( 800, audioContext.currentTime + 0.2 );
-
-          gainNode.gain.setValueAtTime( 0, audioContext.currentTime );
-          gainNode.gain.linearRampToValueAtTime( 0.8, audioContext.currentTime + 0.01 );
-          gainNode.gain.exponentialRampToValueAtTime( 0.001, audioContext.currentTime + 0.5 );
-
-          oscillator.start( audioContext.currentTime );
-          oscillator.stop( audioContext.currentTime + 0.5 );
-        } catch ( error ) {
-          console.log( 'Audio not supported' );
+        if ( audioContext.state === "suspended" ) {
+          try { await audioContext.resume(); } catch { }
         }
+
+        const now = audioContext.currentTime;
+        const duration = 0.5; // total beep length
+
+        // --- Nodes ---
+        const envGain = audioContext.createGain();              // envelope gain (pre-compressor)
+        const compressor = audioContext.createDynamicsCompressor();
+        const postGain = audioContext.createGain();             // small makeup gain (post-compressor)
+
+        // Gentler compression (allows a touch more loudness)
+        compressor.threshold.setValueAtTime( -20, now ); // was -24
+        compressor.knee.setValueAtTime( 30, now );
+        compressor.ratio.setValueAtTime( 8, now );      // was 12
+        compressor.attack.setValueAtTime( 0.003, now );
+        compressor.release.setValueAtTime( 0.25, now );
+
+        // Routing: oscillators -> envGain -> compressor -> postGain -> destination
+        envGain.connect( compressor );
+        compressor.connect( postGain );
+        postGain.connect( audioContext.destination );
+
+        // Small overall boost (~+1.2 dB)
+        postGain.gain.setValueAtTime( 1.15, now );
+
+        // Envelope: slightly higher peak, same shape
+        envGain.gain.setValueAtTime( 0.0001, now );
+        envGain.gain.linearRampToValueAtTime( 1.1, now + 0.015 ); // was 1.0
+        envGain.gain.setValueAtTime( 1.1, now + 0.015 );
+        envGain.gain.linearRampToValueAtTime( 0.001, now + duration );
+
+        // Layered oscillators for fullness
+        const detunesInCents = [0, +6, -6];
+        const oscillators = detunesInCents.map( ( cents ) => {
+          const osc = audioContext.createOscillator();
+          osc.type = "sine";
+          osc.frequency.setValueAtTime( 800, now );
+          osc.frequency.setValueAtTime( 600, now + 0.1 );
+          osc.frequency.setValueAtTime( 800, now + 0.2 );
+          osc.detune.setValueAtTime( cents, now );
+          osc.connect( envGain );
+          return osc;
+        } );
+
+        oscillators.forEach( ( o ) => {
+          o.start( now );
+          o.stop( now + duration );
+        } );
       }
     }
 
