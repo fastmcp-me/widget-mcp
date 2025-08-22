@@ -8,34 +8,28 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 
 export default function createServer() {
   const server = new McpServer({
-    name: "mcp-starter232",
+    name: "widget-mcp",
     version: "1.0.0",
   });
 
   const resource1 = createUIResource({
-    uri: "ui://my-component/instance-1",
+    uri: "ui://widget/timer",
     content: { type: "rawHtml", htmlString: timerHtml },
     encoding: "blob",
   });
 
   server.registerTool(
-    "hello_world",
+    "timer",
     {
-      title: "Hello World",
-      description: "Say hello to the world",
+      title: "Timer",
+      description: "Start a timer",
       inputSchema: {
-        name: z.string().describe("The name to say hello to"),
+        duration: z.number().describe("The duration of the timer in seconds"),
       },
     },
-    async ({ name }) => {
+    async ({ duration }) => {
       return {
-        content: [
-          {
-            type: "text",
-            text: `Hello, ${name}!`,
-          },
-          resource1,
-        ],
+        content: [resource1],
       };
     }
   );
