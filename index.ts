@@ -63,8 +63,8 @@ export default function createServer() {
       description:
         "Display a simple fact. Should be used when answering a users question that has a short factual answer. Example: { description: 'The capital of France', fact: 'Paris' }",
       inputSchema: {
-        description: z.string().describe("A short description of the fact"),
-        fact: z.string().describe("The fact to display"),
+        description: z.string().describe("A description of the fact"),
+        fact: z.string().describe("The fact to display. Should be short and concise."),
       },
     },
     async ({ description, fact }) => {

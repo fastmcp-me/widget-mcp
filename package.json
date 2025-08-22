@@ -4,6 +4,12 @@
   "description": "UI widget for your LLM",
   "type": "module",
   "module": "index.ts",
+  "bin": {
+    "widget-mcp": "./dist/index.cjs"
+  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "npm run build:html && npm run build:mcp",
     "build:html": "tsx scripts/build-html.ts",
@@ -12,7 +18,14 @@
     "dev:mcp": "npm run build:html && npx @smithery/cli dev",
     "check": "tsc --noEmit",
     "start": "node .smithery/index.cjs",
-    "inspect": "npx @modelcontextprotocol/inspector"
+    "inspect": "npx @modelcontextprotocol/inspector",
+    "make-executable": "node -e \"fs.chmodSync('dist/index.cjs', '755');\" --require fs",
+    "build:bundle": "npm run build:html && esbuild index.ts --outfile=dist/index.cjs --bundle --platform=node --format=cjs --banner:js='#!/usr/bin/env node' && npm run make-executable",
+    "watch": "esbuild index.ts --outfile=dist/index.cjs --bundle --platform=node --format=cjs --banner:js='#!/usr/bin/env node' --watch",
+    "dev:bundle": "concurrently \"npm run watch\" \"npm run inspect:bundle\"",
+    "start:bundle": "node dist/index.cjs",
+    "inspect:bundle": "npx @modelcontextprotocol/inspector node dist/index.cjs",
+    "prepublishOnly": "npm run build:bundle"
   },
   "dependencies": {
     "@mcp-ui/server": "^5.2.0",
