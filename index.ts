@@ -86,7 +86,7 @@ export default function createServer() {
     {
       title: "Unit Conversion",
       description:
-        "Display a unit conversion widget that allows real-time conversion between multiple units. Each unit should contain a formula to convert to that unit from each of the other units. Example input: { units: [{id: 'ft', name: 'Feet', formulas: {in:'{in} / 12'}, {id: 'in', name: 'Inches', formulas: {ft:'{ft} * 12'}}], initialValue: { id: 'ft', value: 1 }}",
+        "Display a unit conversion widget that allows real-time conversion between multiple units. Each unit should contain a formula to convert to that unit from each of the other units. Example input: { units: [{id: 'ft', name: 'Feet', formulas: {in:'{ft} * 12'}, {id: 'in', name: 'Inches', formulas: {ft:'{in} * 12'}}], initialValue: { id: 'ft', value: 1 }}",
       inputSchema: {
         units: z
           .array(
@@ -95,9 +95,7 @@ export default function createServer() {
               name: z.string().describe("Display name for the unit"),
               formulas: z
                 .record(z.string())
-                .describe(
-                  "Conversion formulas to other units, using {id} as placeholder. For example,{ id: 'ft', formulas: [{in: '{in} / 12'}] } means 1 foot is 12 inches. For formula 'ft', the only variable should be 'ft' since we'll use this to compute from 'ft' to 'in'."
-                ),
+                .describe("Conversion formulas to other units, using {id} as placeholder."),
             })
           )
           .describe("Array of units with conversion formulas"),

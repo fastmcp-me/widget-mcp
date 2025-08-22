@@ -233,7 +233,6 @@
             }
 
             init( initialValue ) {
-                // Create input fields for each unit
                 this.units.forEach( unit => {
                     const row = document.createElement( 'div' );
                     row.className = 'unit-row';
@@ -257,6 +256,7 @@
 
                     row.appendChild( label );
                     row.appendChild( input );
+
                     this.container.appendChild( row );
                 } );
 
@@ -310,7 +310,100 @@
                 // Simple safe math expression evaluator
                 // Only allows numbers, operators, and parentheses
                 const cleaned = expr.replace( /[^0-9+\-*/().\s]/g, '' );
-                return Function( '"use strict"; return (' + cleaned + ')' )();
+                // Parse and evaluate the mathematical expression safely
+                return this.parseExpression( cleaned );
+            }
+
+            parseExpression( expr ) {
+                // Remove whitespace
+                expr = expr.replace( /\s+/g, '' );
+
+                // Parse the expression into tokens
+                const tokens = this.tokenize( expr );
+
+                // Evaluate the tokens
+                return this.evaluateTokens( tokens );
+            }
+
+            tokenize( expr ) {
+                const tokens = [];
+                let i = 0;
+
+                while ( i < expr.length ) {
+                    const char = expr[i];
+
+                    if ( /[0-9.]/.test( char ) ) {
+                        // Parse number
+                        let num = '';
+                        while ( i < expr.length && /[0-9.]/.test( expr[i] ) ) {
+                            num += expr[i];
+                            i++;
+                        }
+                        tokens.push( { type: 'number', value: parseFloat( num ) } );
+                    } else if ( /[+\-*/()]/.test( char ) ) {
+                        // Parse operator or parenthesis
+                        tokens.push( { type: 'operator', value: char } );
+                        i++;
+                    } else {
+                        // Skip invalid characters
+                        i++;
+                    }
+                }
+
+                return tokens;
+            }
+
+            evaluateTokens( tokens ) {
+                // Convert infix to postfix (Shunting Yard algorithm)
+                const output = [];
+                const operators = [];
+                const precedence = { '+': 1, '-': 1, '*': 2, '/': 2 };
+
+                for ( const token of tokens ) {
+                    if ( token.type === 'number' ) {
+                        output.push( token.value );
+                    } else if ( token.type === 'operator' ) {
+                        if ( token.value === '(' ) {
+                            operators.push( token.value );
+                        } else if ( token.value === ')' ) {
+                            while ( operators.length && operators[operators.length - 1] !== '(' ) {
+                                output.push( operators.pop() );
+                            }
+                            operators.pop(); // Remove the '('
+                        } else {
+                            while ( operators.length &&
+                                operators[operators.length - 1] !== '(' &&
+                                precedence[operators[operators.length - 1]] >= precedence[token.value] ) {
+                                output.push( operators.pop() );
+                            }
+                            operators.push( token.value );
+                        }
+                    }
+                }
+
+                while ( operators.length ) {
+                    output.push( operators.pop() );
+                }
+
+                // Evaluate postfix expression
+                const stack = [];
+                for ( const item of output ) {
+                    if ( typeof item === 'number' ) {
+                        stack.push( item );
+                    } else {
+                        const b = stack.pop();
+                        const a = stack.pop();
+
+                        switch ( item ) {
+                            case '+': stack.push( a + b ); break;
+                            case '-': stack.push( a - b ); break;
+                            case '*': stack.push( a * b ); break;
+                            case '/': stack.push( a / b ); break;
+                        }
+                    }
+                }
+
+                return stack[0] || 0;
             }
 
             formatNumber( num ) {
