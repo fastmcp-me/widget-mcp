@@ -1,4 +1,4 @@
-# Widget MCP
+# ⚙️ Widget MCP
 
 Add simple widgets to you LLM chat for common situations like timers, conversions and more.
 
@@ -21,15 +21,13 @@ If you've ever google "convert X to Y" or "2 minute timer" and see the custom UI
 
 ## Supported MCP Clients
 
-MCP-UI is new and as of August 2025 is only supported by a few clients.
+MCP-UI is new and as of August 2025 is only supported by a few clients. 
 
 ### Smithery
 
 Try widget-mcp in the Smithery playground.
 
 ### Goose
-
-To use widget-mcp with [Goose](https://github.com/block/goose):
 
 1. [Install Goose](https://block.github.io/goose/docs/quickstart)
 2. Click `Extensions` and `Add custom extension`
@@ -63,7 +61,6 @@ npm run dev:html
 # Launch the MCP server with Smithery's web inspector
 npm run dev:mcp
 ```
-
 
 ## Links
 

@@ -61,7 +61,7 @@ export default function createServer() {
     {
       title: "Display Fact",
       description:
-        "Display a simple fact. Should be used when answering a users question that has a short factual answer. Example: { description: 'The capital of France', fact: 'Paris' }",
+        "Display a simple fact. Should be used when answering a users question that has a short factual answer. You don't need to say anything else after answering with this tool. Example: { description: 'The capital of France', fact: 'Paris' }",
       inputSchema: {
         description: z.string().describe("A description of the fact"),
         fact: z.string().describe("The fact to display. Should be short and concise."),
