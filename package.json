@@ -5,10 +5,15 @@
   "type": "module",
   "module": "index.ts",
   "scripts": {
-    "dev": "npx @smithery/cli dev",
-    "build": "npx @smithery/cli build",
-    "start": "node .smithery/index.cjs",
-    "check": "tsc --noEmit"
+    "build": "npm run build:html && npm run build:mcp",
+    "build:html": "tsx scripts/build-html.ts",
+    "build:mcp": "npx @smithery/cli build",
+    "dev": "concurrently \"npm run dev:html\" \"npm run watch:html\" \"npm run dev:mcp\"",
+    "dev:html": "npx vite serve html",
+    "dev:mcp": "npx @smithery/cli dev",
+    "watch:html": "chokidar 'html/**/*.html' -c 'npm run build:html'",
+    "check": "tsc --noEmit",
+    "start": "node .smithery/index.cjs"
   },
   "dependencies": {
     "@mcp-ui/server": "^5.2.0",
@@ -16,6 +21,8 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
+    "chokidar-cli": "^3.0.0",
+    "concurrently": "^9.1.2",
     "prettier": "^3.4.2",
     "tsx": "^4.20.4",
     "typescript": "^5.9.2"

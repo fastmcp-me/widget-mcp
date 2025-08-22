@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Timer</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: #f5f5f5;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .timer-container {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 24px;
+      padding: 24px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      max-width: 400px;
+      width: 100%;
+    }
+
+    .timer-header {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+
+
+
+    .controls-top {
+      display: flex;
+      gap: 12px;
+    }
+
+    .control-btn {
+      width: 40px;
+      height: 40px;
+      border: none;
+      background: #f0f2f5;
+      border-radius: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      transition: all 0.2s ease;
+    }
+
+    .control-btn:hover {
+      background: #e0e4e8;
+    }
+
+    .control-btn.muted {
+      background: #ea4335;
+      color: white;
+    }
+
+    .mute-icon {
+      color: #666;
+      transition: color 0.2s ease;
+    }
+
+    .control-btn:hover .mute-icon {
+      color: #333;
+    }
+
+    .control-btn.muted .mute-icon {
+      color: white;
+    }
+
+    .timer-circle {
+      overflow: visible;
+      position: relative;
+      width: 280px;
+      height: 280px;
+      margin: 0 auto 40px;
+    }
+
+    .progress-ring {
+      transform: rotate(-90deg);
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+
+    .progress-ring-bg {
+      fill: none;
+      stroke: #e8eaed;
+      stroke-width: 8;
+    }
+
+    .progress-ring-progress {
+      fill: none;
+      stroke: #4285f4;
+      stroke-width: 8;
+      stroke-linecap: round;
+      stroke-dasharray: 0 879.646;
+      transition: stroke-dasharray 0.1s ease;
+    }
+
+    .timer-display {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 48px;
+      font-weight: 300;
+      color: #333;
+      letter-spacing: 2px;
+      background: transparent;
+      border: none;
+      text-align: center;
+      width: 200px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .timer-display:not([readonly]) {
+      border: 2px dashed #4285f4;
+      border-radius: 8px;
+      padding: 8px;
+      cursor: text;
+    }
+
+    .timer-controls {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      margin-bottom: 30px;
+    }
+
+    .main-control-btn {
+      width: 120px;
+      height: 50px;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .play-pause-btn {
+      background: #4285f4;
+      color: white;
+    }
+
+    .play-pause-btn:hover {
+      background: #3367d6;
+    }
+
+    .reset-btn {
+      background: #f0f2f5;
+      color: #333;
+    }
+
+    .reset-btn:hover {
+      background: #e0e4e8;
+    }
+
+    .time-config {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .time-input {
+      width: 60px;
+      height: 40px;
+      border: 2px solid #e8eaed;
+      border-radius: 8px;
+      text-align: center;
+      font-size: 16px;
+      font-weight: 500;
+    }
+
+    .time-input:focus {
+      outline: none;
+      border-color: #4285f4;
+    }
+
+    .time-label {
+      font-size: 14px;
+      color: #666;
+    }
+
+    .set-btn {
+
+      padding: 8px 16px;
+      border: none;
+      background: #34a853;
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .set-btn:hover {
+      background: #2d9c47;
+    }
+
+    .notification {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background: #34a853;
+      color: white;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 500;
+      opacity: 0;
+      transform: translateX(-10%);
+      transition: all 0.3s ease;
+    }
+
+    .notification.show {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .feedback-text {
+      margin-top: 20px;
+      color: #666;
+      font-size: 14px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .feedback-text:hover {
+      color: #4285f4;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="timer-container">
+    <div class="notification" id="notification">
+      Time's up!
+    </div>
+    <div class="timer-header">
+      <div class="controls-top">
+        <button class="control-btn mute-btn" title="Toggle sound">
+          <svg class="mute-icon unmuted" width="20" height="20" viewBox="0 0 24 24" fill="none"
+            xmlns="http://www.w3.org/2000/svg">
+            <path d="M11 5L6 9H2V15H6L11 19V5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round" />
+            <path
+              d="M19.07 4.93C20.9437 6.80369 21.9991 9.34785 21.9991 12C21.9991 14.6522 20.9437 17.1963 19.07 19.07M15.54 8.46C16.4774 9.39764 17.0039 10.6692 17.0039 12C17.0039 13.3308 16.4774 14.6024 15.54 15.54"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+          <svg class="mute-icon muted" width="20" height="20" viewBox="0 0 24 24" fill="none"
+            xmlns="http://www.w3.org/2000/svg" style="display: none;">
+            <path d="M11 5L6 9H2V15H6L11 19V5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round" />
+            <line x1="23" y1="9" x2="17" y2="15" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+            <line x1="17" y1="9" x2="23" y2="15" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="timer-circle">
+      <svg class="progress-ring" viewBox="0 0 280 280">
+        <circle class="progress-ring-bg" cx="140" cy="140" r="140"></circle>
+        <circle class="progress-ring-progress" cx="140" cy="140" r="140"></circle>
+      </svg>
+      <input type="text" class="timer-display" value="20:58" readonly>
+    </div>
+
+    <div class="timer-controls">
+      <button class="main-control-btn play-pause-btn">
+        <span class="btn-icon">⏸</span>
+        <span class="btn-text">Pause</span>
+      </button>
+      <button class="main-control-btn reset-btn">
+        <span class="btn-icon">↻</span>
+        <span class="btn-text">Reset</span>
+      </button>
+    </div>
+
+  </div>
+
+
+  <script>
+    class Timer {
+      constructor() {
+        this.totalTime = 0;
+        this.currentTime = 0;
+        this.isRunning = false;
+        this.isMuted = false;
+        this.mode = 'timer';
+        this.interval = null;
+
+        this.initializeElements();
+        this.bindEvents();
+        this.setTime( 20, 58 ); // Default time from the image
+        this.updateDisplay();
+      }
+
+      initializeElements() {
+        this.display = document.querySelector( '.timer-display' );
+        this.playPauseBtn = document.querySelector( '.play-pause-btn' );
+        this.resetBtn = document.querySelector( '.reset-btn' );
+        this.muteBtn = document.querySelector( '.mute-btn' );
+        this.minutesInput = document.getElementById( 'minutes' );
+        this.secondsInput = document.getElementById( 'seconds' );
+        this.setBtn = document.querySelector( '.set-btn' );
+        this.notification = document.getElementById( 'notification' );
+        this.progressRing = document.querySelector( '.progress-ring-progress' );
+
+
+        // Calculate circle circumference for progress ring
+        this.circumference = 2 * Math.PI * 140;
+        this.progressRing.style.strokeDasharray = `0 ${this.circumference}`;
+      }
+
+      bindEvents() {
+        this.playPauseBtn.addEventListener( 'click', () => this.toggleTimer() );
+        this.resetBtn.addEventListener( 'click', () => this.resetTimer() );
+        this.muteBtn.addEventListener( 'click', () => this.toggleMute() );
+
+        // Make timer display editable on click
+        this.display.addEventListener( 'click', () => this.makeEditable() );
+        this.display.addEventListener( 'blur', () => this.finishEditing() );
+        this.display.addEventListener( 'keydown', ( e ) => this.handleTimerInput( e ) );
+        this.display.addEventListener( 'input', ( e ) => this.handleTimerInputChange( e ) );
+        this.setBtn.addEventListener( 'click', () => this.setCustomTime() );
+
+
+
+        // Keyboard shortcuts
+        document.addEventListener( 'keydown', ( e ) => {
+          if ( e.code === 'Space' ) {
+            e.preventDefault();
+            this.toggleTimer();
+          } else if ( e.code === 'KeyR' ) {
+            this.resetTimer();
+          } else if ( e.code === 'KeyM' ) {
+            this.toggleMute();
+          }
+        } );
+      }
+
+      setTime( minutes, seconds ) {
+        this.totalTime = minutes * 60 + seconds;
+        this.currentTime = this.totalTime;
+        this.updateDisplay();
+        this.updateProgress();
+      }
+
+      setCustomTime() {
+        const minutes = parseInt( this.minutesInput.value ) || 0;
+        const seconds = parseInt( this.secondsInput.value ) || 0;
+        this.setTime( minutes, seconds );
+        this.showNotification( `Timer set to ${minutes}:${seconds.toString().padStart( 2, '0' )}` );
+      }
+
+      toggleTimer() {
+        if ( this.isRunning ) {
+          this.pauseTimer();
+        } else {
+          this.startTimer();
+        }
+      }
+
+      startTimer() {
+        this.isRunning = true;
+        this.updatePlayPauseButton();
+
+        this.interval = setInterval( () => {
+          this.currentTime--;
+          if ( this.currentTime <= 0 ) {
+            this.currentTime = 0;
+            this.completeTimer();
+          }
+
+          this.updateDisplay();
+          this.updateProgress();
+        }, 1000 );
+      }
+
+      pauseTimer() {
+        this.isRunning = false;
+        clearInterval( this.interval );
+        this.updatePlayPauseButton();
+      }
+
+      resetTimer() {
+        this.pauseTimer();
+        this.currentTime = this.totalTime;
+        this.updateDisplay();
+        this.updateProgress();
+      }
+
+      completeTimer() {
+        this.pauseTimer();
+        this.playSound();
+        this.showNotification( "Time's up! 🎉" );
+
+        // Flash the progress ring
+        this.progressRing.style.stroke = '#ea4335';
+        setTimeout( () => {
+          this.progressRing.style.stroke = '#4285f4';
+        }, 1000 );
+      }
+
+      updateDisplay() {
+        const minutes = Math.floor( Math.abs( this.currentTime ) / 60 );
+        const seconds = Math.abs( this.currentTime ) % 60;
+        this.display.value = `${minutes.toString().padStart( 2, '0' )}:${seconds.toString().padStart( 2, '0' )}`;
+      }
+
+      updateProgress() {
+        const progress = this.totalTime > 0 ? ( this.totalTime - this.currentTime ) / this.totalTime : 0;
+        const offset = this.circumference * progress;
+        this.progressRing.style.strokeDasharray = `${offset} ${this.circumference}`;
+      }
+
+      updatePlayPauseButton() {
+        const icon = this.playPauseBtn.querySelector( '.btn-icon' );
+        const text = this.playPauseBtn.querySelector( '.btn-text' );
+
+        if ( this.isRunning ) {
+          icon.textContent = '⏸';
+          text.textContent = 'Pause';
+        } else {
+          icon.textContent = '▶';
+          text.textContent = 'Start';
+        }
+      }
+
+      toggleMute() {
+        this.isMuted = !this.isMuted;
+
+        const unmutedIcon = this.muteBtn.querySelector( '.mute-icon.unmuted' );
+        const mutedIcon = this.muteBtn.querySelector( '.mute-icon.muted' );
+
+        if ( this.isMuted ) {
+          unmutedIcon.style.display = 'none';
+          mutedIcon.style.display = 'block';
+        } else {
+          unmutedIcon.style.display = 'block';
+          mutedIcon.style.display = 'none';
+        }
+
+        this.muteBtn.classList.toggle( 'muted', this.isMuted );
+
+        const message = this.isMuted ? 'Sound muted' : 'Sound unmuted';
+        this.showNotification( message );
+      }
+
+
+
+      makeEditable() {
+        // Store if timer was running before editing
+        this.wasRunningBeforeEdit = this.isRunning;
+
+        // Pause timer if it's running
+        if ( this.isRunning ) {
+          this.pauseTimer();
+        }
+
+        this.display.removeAttribute( 'readonly' );
+        this.display.focus();
+        this.display.select();
+
+        // Initialize editing state
+        this.editingDigits = this.display.value.replace( ':', '' ).padStart( 4, '0' );
+      }
+
+      handleTimerInput( e ) {
+        if ( this.display.hasAttribute( 'readonly' ) ) return;
+
+        if ( e.key === 'Enter' ) {
+          this.display.blur();
+          return;
+        }
+
+        // Only allow numeric input and some control keys
+        if ( !/^\d$/.test( e.key ) &&
+          !['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab', 'Escape'].includes( e.key ) ) {
+          e.preventDefault();
+          return;
+        }
+
+        if ( /^\d$/.test( e.key ) ) {
+          e.preventDefault();
+          this.addDigit( e.key );
+        } else if ( e.key === 'Backspace' ) {
+          e.preventDefault();
+          this.removeDigit();
+        } else if ( e.key === 'Escape' ) {
+          // Cancel editing and revert to original time
+          this.updateDisplay();
+          this.display.blur();
+        }
+      }
+
+      handleTimerInputChange( e ) {
+        // Prevent manual input changes, we handle everything through keydown
+        e.preventDefault();
+      }
+
+      addDigit( digit ) {
+        // Shift existing digits left and add new digit
+        this.editingDigits = this.editingDigits.slice( 1 ) + digit;
+        this.updateEditingDisplay();
+      }
+
+      removeDigit() {
+        // Shift digits right and add zero at the beginning
+        this.editingDigits = '0' + this.editingDigits.slice( 0, 3 );
+        this.updateEditingDisplay();
+      }
+
+      updateEditingDisplay() {
+        // Format as MM:SS
+        const minutes = this.editingDigits.slice( 0, 2 );
+        const seconds = this.editingDigits.slice( 2, 4 );
+        this.display.value = `${minutes}:${seconds}`;
+      }
+
+      finishEditing() {
+        this.display.setAttribute( 'readonly', 'true' );
+
+        // Parse the entered time
+        const timeStr = this.display.value;
+        const timeRegex = /^(\d{1,2}):(\d{2})$/;
+        const match = timeStr.match( timeRegex );
+
+        if ( match ) {
+          const minutes = parseInt( match[1] );
+          const seconds = parseInt( match[2] );
+
+          if ( minutes >= 0 && minutes <= 99 && seconds >= 0 && seconds <= 59 ) {
+            this.setTime( minutes, seconds );
+            this.showNotification( `Timer set to ${minutes}:${seconds.toString().padStart( 2, '0' )}` );
+
+            // Resume timer if it was running before editing
+            if ( this.wasRunningBeforeEdit && this.currentTime > 0 ) {
+              this.startTimer();
+            }
+            return;
+          }
+        }
+
+        // Invalid format, revert to current time
+        this.updateDisplay();
+        this.showNotification( 'Invalid time format. Use MM:SS' );
+
+        // Resume timer if it was running before editing
+        if ( this.wasRunningBeforeEdit && this.currentTime > 0 ) {
+          this.startTimer();
+        }
+      }
+
+      playSound() {
+        if ( this.isMuted ) return;
+
+        // Create audio context and play a pleasant notification sound
+        try {
+          const audioContext = new ( window.AudioContext || window.webkitAudioContext )();
+          const oscillator = audioContext.createOscillator();
+          const gainNode = audioContext.createGain();
+
+          oscillator.connect( gainNode );
+          gainNode.connect( audioContext.destination );
+
+          oscillator.frequency.setValueAtTime( 800, audioContext.currentTime );
+          oscillator.frequency.setValueAtTime( 600, audioContext.currentTime + 0.1 );
+          oscillator.frequency.setValueAtTime( 800, audioContext.currentTime + 0.2 );
+
+          gainNode.gain.setValueAtTime( 0, audioContext.currentTime );
+          gainNode.gain.linearRampToValueAtTime( 0.1, audioContext.currentTime + 0.01 );
+          gainNode.gain.exponentialRampToValueAtTime( 0.001, audioContext.currentTime + 0.5 );
+
+          oscillator.start( audioContext.currentTime );
+          oscillator.stop( audioContext.currentTime + 0.5 );
+        } catch ( error ) {
+          console.log( 'Audio not supported' );
+        }
+      }
+
+      showNotification( message ) {
+        this.notification.textContent = message;
+        this.notification.classList.add( 'show' );
+
+        setTimeout( () => {
+          this.notification.classList.remove( 'show' );
+        }, 3000 );
+      }
+    }
+
+    // Initialize timer when page loads
+    document.addEventListener( 'DOMContentLoaded', () => {
+      new Timer();
+    } );
+
+
+  </script>
+</body>
+
+</html>
