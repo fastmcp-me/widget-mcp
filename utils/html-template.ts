@@ -28,13 +28,33 @@
  */
 export function templateHtml(htmlContent: string, templateArgs: Record<string, any>): string {
   let templatedContent = htmlContent;
-  const configRegex = /const\s+TEMPLATE_CONFIG\s*=\s*({[^}]*})\s*;/g;
+
+  // More robust regex that handles multi-line objects with nested braces
+  const configRegex = /const\s+TEMPLATE_CONFIG\s*=\s*({[\s\S]*?});/g;
 
   templatedContent = templatedContent.replace(configRegex, (match, configObject) => {
     try {
-      const defaultConfig = JSON.parse(configObject);
+      // Use a more sophisticated approach to find the matching closing brace
+      const startIndex = match.indexOf("{");
+      let braceCount = 0;
+      let endIndex = startIndex;
+
+      for (let i = startIndex; i < match.length; i++) {
+        if (match[i] === "{") braceCount++;
+        if (match[i] === "}") braceCount--;
+        if (braceCount === 0) {
+          endIndex = i;
+          break;
+        }
+      }
+
+      const objectString = match.substring(startIndex, endIndex + 1);
+
+      // Use eval in a safe context to parse JavaScript object literals
+      // This handles unquoted property names and single quotes
+      const defaultConfig = eval("(" + objectString + ")");
       const mergedConfig = { ...defaultConfig, ...templateArgs };
-      return `const TEMPLATE_CONFIG = ${JSON.stringify(mergedConfig, null, 2)};`;
+      return `const TEMPLATE_CONFIG = ${JSON.stringify(mergedConfig, null, 4)};`;
     } catch (error) {
       console.warn("Failed to parse TEMPLATE_CONFIG object:", error);
       return match; // Return original if parsing fails

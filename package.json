@@ -25,6 +25,10 @@
     "dev:bundle": "concurrently \"npm run watch\" \"npm run inspect:bundle\"",
     "start:bundle": "node dist/index.cjs",
     "inspect:bundle": "npx @modelcontextprotocol/inspector node dist/index.cjs",
+    "verify:template": "tsx scripts/verify-conversion-template.ts",
+    "verify:timer": "tsx scripts/verify-timer-template.ts",
+    "verify:fact": "tsx scripts/verify-fact-template.ts",
+    "verify:all": "npm run verify:template && npm run verify:timer && npm run verify:fact",
     "prepublishOnly": "npm run build:bundle"
   },
   "dependencies": {
