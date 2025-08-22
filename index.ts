@@ -1,12 +1,10 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
-// @ts-ignore idk what's going on but it works and it's simple
-import { createUIResource } from "@mcp-ui/server";
-// Import generated HTML content with full type safety
 import { timerHtml } from "./generated/html.js";
-// Import our HTML templating utility
 import { createTemplatedUIResource } from "./utils/html-template.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+// @ts-ignore idk what's going on but it works and it's simple
+import { createUIResource } from "@mcp-ui/server";
 
 export default function createServer() {
   const server = new McpServer({
@@ -24,7 +22,6 @@ export default function createServer() {
       },
     },
     async ({ duration }) => {
-      // Create a templated UI resource with the duration parameter
       const timerResource = createTemplatedUIResource(
         createUIResource,
         "ui://widget/timer",
@@ -46,7 +43,6 @@ export default function createServer() {
       inputSchema: {},
     },
     async () => {
-      // Create a templated UI resource in stopwatch mode
       const stopwatchResource = createTemplatedUIResource(
         createUIResource,
         "ui://widget/stopwatch",
