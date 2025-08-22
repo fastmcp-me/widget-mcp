@@ -1,108 +1,78 @@
-# MCP Starter Server
+# Widget MCP
 
-A minimal [ModelContextProtocol](https://modelcontextprotocol.io) server template for building AI assistant tools. This starter provides a basic structure for creating MCP tools that can be used with AI assistants like Claude.
+Add simple widgets to you LLM chat for common situations like timers, conversions and more.
 
-## Features
+![Widget Demo GIF Placeholder]
 
-- Simple "hello world" tool example
-- TypeScript + esbuild setup
-- Development tools preconfigured
+## Motivation
 
-## Setup to build and run with Claude
+MCP-UI opens the door to [breaking the text wall](https://shopify.engineering/mcp-ui-breaking-the-text-wall) from chat UIs we've been using the last few years. The full extent of what's possible is 
 
-1. Download and install Claude desktop app from [claude.ai/download](https://claude.ai/download)
+This project shows the floor of what's possible by providing a few simple widgets for common situations.
 
-2. Clone the repo, install dependencies and build:
+If you've ever google "convert X to Y" or "2 minute timer" and see the custom UI results, this should feel very familiar.
 
-```
-npm install
-npm run build
-```
+## Current widgets
 
-3. Configure Claude to use this MCP server. If this is your first MCP server, in the root of this project run:
+- `Timer` - Editable timer with a chime. 
+- `Stopwatch` - Timer that just counts up.
+- `Conversion` - Convert between set of units for which the LLM can write a formula. 
+- `Display Fact` - When the answer is simple, just show it in an easy to read card.
+
+## Supported MCP Clients
+
+MCP-UI is new and as of August 2025 is only supported by a few clients.
+
+### Smithery
+
+Try widget-mcp in the Smithery playground.
+
+### Goose
+
+To use widget-mcp with [Goose](https://github.com/block/goose):
+
+1. [Install Goose](https://block.github.io/goose/docs/quickstart)
+2. Click `Extensions` and `Add custom extension`
+3. Fill in name as `Widgets` and command `npx widget-mcp`
+4. Verify it's working by clicking `Chat` and prompting `2 minute timer`
+
+![Goose Setup](goose-setup.png)
+
+
+## Contributions welcome!
+
+Here's a few examples of widgets that could be fun to add.
+
+- **Color Picker** - Interactive color selection and palette tools. Could be parameterized to allow the LLM to suggest a color and let the user tweak and explore.
+- **Calculator** - Basic and scientific calculator functionality. Initial function seeded by LLM.
+- **Dice Roller** - Custom set of dice based on what you ask the agent for.
+
+I'm sure you have some cool ideas!
+
+## Development
+
+To add new widgets, add an template file to the `html` directory and a new tool to `index.ts`
 
 ```bash
-echo '{
-  "mcpServers": {
-    "mcp-starter": {
-      "command": "node",
-      "args": ["'$PWD'/dist/index.cjs"]
-    }
-  }
-}' > ~/Library/Application\ Support/Claude/claude_desktop_config.json
+# Install dependencies
+npm install
+
+# Iterate on the html with hot-reloads
+npm run dev:html
+
+# Launch the MCP server with Smithery's web inspector
+npm run dev:mcp
 ```
 
-This should result in an entry in your `claude_desktop_config.json` like:
 
-```json
-"mcpServers": {
-  "mcp-starter": {
-    "command": "node",
-    "args": ["/Users/matt/code/mcp-starter/dist/index.cjs"]
-  }
-}
-```
+## Links
 
-If you have existing MCP servers, add the `mcp-starter` block to your existing config. It's an important detail that the `args` is the path to `<path_to_repo_on_your_machine>/mcp-starter/dist/index.cjs`.
+- **[MCP-UI](https://mcpui.dev/)** - UI over MCP.
+- **[Smithery](https://smithery.ai)** - Easiest way to find and try MCP servers.
+- **[Goose](https://block.github.io/goose/)** - Block's opensource MCP client.
+- **[PulseMCP](https://github.com/[placeholder]/pulsemcp)** - The best way to stay up-to-date on MCP.
+- Maintained by **[Ref.](https://ref.tools)** - Context for your coding agent.
 
-4. Restart Claude Desktop.
+## License
 
-5. Look for the hammer icon with the number of available tools in Claude's interface to confirm the server is running.
-
-6. If this is all working, you should be able to develop your MCP server using `npm run dev` and test it in Claude. You'll need to restart Claude each time to restart the MCP server.
-
-## Developing with Inspector
-
-For development and debugging purposes, you can use the MCP Inspector tool. The Inspector provides a visual interface for testing and monitoring MCP server interactions.
-
-Visit the [Inspector documentation](https://modelcontextprotocol.io/docs/tools/inspector) for detailed setup instructions.
-
-To test locally with Inspector:
-```
-npm run inspect
-```
-
-To build on file changes run:
-```
-npm run watch
-```
-
-Or run both the watcher and inspector:
-```
-npm run dev
-```
-
-## Publishing
-
-Once you're ready to distribute your server, it's simple! 
-
-1. Set up an [NPM](https://www.npmjs.com/) account.
-
-2. Run `npm publish`. This will publish a package using the project name in `package.json`
-
-3. Once published, others can install the server with a config entry like:
-
-```
-"mcpServers": {
-  "<your-package-name>": {
-    "command": "npx",
-    "args": ["<your-package-name>"]
-  }
-}
-```
-
-## Available Tools
-
-The server provides:
-
-- `hello_tool`: A simple example tool that takes a name parameter and returns a greeting
-
-## Creating New Tools
-
-To add new tools:
-
-1. Define the tool schema in `index.ts`
-2. Add it to the tools array in the `ListToolsRequestSchema` handler
-3. Add the implementation in the `CallToolRequestSchema` handler
-
-See the `hello_tool` implementation as an example.
+MIT 
