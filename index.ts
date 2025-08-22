@@ -86,7 +86,7 @@ export default function createServer() {
     {
       title: "Unit Conversion",
       description:
-        "Display a unit conversion widget that allows real-time conversion between multiple units. Each unit should contain a formula to convert to that unit from each of the other units. Example input: { units: [{id: 'ft', name: 'Feet', formulas: {in:'{ft} * 12'}, {id: 'in', name: 'Inches', formulas: {ft:'{in} * 12'}}], initialValue: { id: 'ft', value: 1 }}",
+        "Display a unit conversion widget that allows real-time conversion between multiple units. Each unit should contain a formula for each other unit in terms of the current unit. Example input: { units: [{id: 'ft', name: 'Feet', formulas: {in:'{ft} * 12'}, {id: 'in', name: 'Inches', formulas: {ft:'{in} * 12'}}], initialValue: { id: 'ft', value: 1 }}",
       inputSchema: {
         units: z
           .array(
