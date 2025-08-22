@@ -407,15 +407,15 @@
         this.updateProgress();
       }
 
-      completeTimer() {
+      async completeTimer() {
         this.pauseTimer();
-        this.playSound();
 
-        // Flash the progress ring
-        this.progressRing.style.stroke = '#ea4335';
-        setTimeout( () => {
+        for ( let i = 0; i < 4; i++ ) {
+          this.playSound();
+          this.progressRing.style.stroke = '#ea4335';
+          await new Promise( resolve => setTimeout( resolve, 1000 ) );
           this.progressRing.style.stroke = '#4285f4';
-        }, 1000 );
+        }
       }
 
       updateDisplay() {
