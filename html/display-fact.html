@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fact Display</title>
+  <style>
+    :root {
+      /* Colors */
+      --color-primary: #4285f4;
+      --color-primary-hover: #3367d6;
+      --color-secondary: #34a853;
+      --color-secondary-hover: #2d9c47;
+      --color-danger: #ea4335;
+      --color-background: #ffffff;
+      --color-surface: #ffffff;
+      --color-surface-variant: #f0f2f5;
+      --color-surface-hover: #e0e4e8;
+      --color-outline: #e8eaed;
+      --color-text-primary: #333;
+      --color-text-secondary: #666;
+
+      /* Typography */
+      --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      --font-size-xs: 0.875rem;
+      --font-size-sm: 1rem;
+      --font-size-md: 1.125rem;
+      --font-size-lg: 2.25rem;
+      --font-size-xl: 2.75rem;
+      --font-weight-light: 300;
+      --font-weight-normal: 400;
+      --font-weight-medium: 500;
+      --font-weight-bold: 700;
+
+      /* Spacing */
+      --space-xs: 0.5rem;
+      --space-sm: 0.75rem;
+      --space-md: 1rem;
+      --space-lg: 1.25rem;
+      --space-xl: 2rem;
+      --space-2xl: 3rem;
+
+      /* Border radius */
+      --radius-sm: 0.5rem;
+      --radius-md: 0.75rem;
+      --radius-lg: 1.375rem;
+
+      /* Transitions */
+      --transition-fast: 0.1s ease;
+      --transition-normal: 0.2s ease;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-family);
+      background: var(--color-background);
+      min-height: 100vh;
+    }
+
+    .fact-container {
+      display: flex;
+      flex-direction: column;
+      padding: var(--space-xl);
+      max-width: 600px;
+      width: 100%;
+      text-align: left;
+    }
+
+    .fact-description {
+      font-size: var(--font-size-md);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-text-secondary);
+      letter-spacing: 0.025rem;
+      margin-bottom: var(--space-sm);
+      line-height: 1.4;
+    }
+
+    .fact-content {
+      font-size: var(--font-size-xl);
+      font-weight: var(--font-weight-bold);
+      color: var(--color-text-primary);
+      letter-spacing: 0.05rem;
+      line-height: 1.3;
+      word-wrap: break-word;
+      hyphens: auto;
+    }
+
+    /* Animation for smooth entrance */
+    /* .fact-container {
+      animation: fadeInUp 0.5s ease-out;
+    } */
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0.5;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <script>
+    const ro = new ResizeObserver( ( entries ) => {
+      for ( const entry of entries ) {
+        window.parent.postMessage(
+          { type: "ui-size-change", payload: { height: entry.contentRect.height } },
+          "*"
+        );
+      }
+    } );
+    ro.observe( document.documentElement );
+  </script>
+
+  <div class="fact-container">
+    <div class="fact-description" id="fact-description"></div>
+    <div class="fact-content" id="fact-content"></div>
+  </div>
+
+  <script>
+    const TEMPLATE_CONFIG = { "description": "Sample description", "fact": "Sample fact" };
+
+    function initializeFact() {
+      const descriptionElement = document.getElementById( 'fact-description' );
+      const factElement = document.getElementById( 'fact-content' );
+
+      if ( descriptionElement && factElement ) {
+        descriptionElement.textContent = TEMPLATE_CONFIG.description || '';
+        factElement.textContent = TEMPLATE_CONFIG.fact || '';
+      }
+    }
+
+    // Initialize when page loads
+    document.addEventListener( 'DOMContentLoaded', initializeFact );
+  </script>
+</body>
+
+</html>

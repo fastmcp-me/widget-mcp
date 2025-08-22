@@ -1,6 +1,6 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
-import { timerHtml } from "./generated/html.js";
+import { timerHtml, display_factHtml } from "./generated/html.js";
 import { createTemplatedUIResource } from "./utils/html-template.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 // @ts-ignore idk what's going on but it works and it's simple
@@ -52,6 +52,31 @@ export default function createServer() {
 
       return {
         content: [stopwatchResource],
+      };
+    }
+  );
+
+  server.registerTool(
+    "display-fact",
+    {
+      title: "Display Fact",
+      description:
+        "Display a simple fact. Should be used when answering a users question that has a short factual answer. Example: { description: 'The capital of France', fact: 'Paris' }",
+      inputSchema: {
+        description: z.string().describe("A short description of the fact"),
+        fact: z.string().describe("The fact to display"),
+      },
+    },
+    async ({ description, fact }) => {
+      const factResource = createTemplatedUIResource(
+        createUIResource,
+        "ui://widget/display-fact",
+        display_factHtml,
+        { description, fact }
+      );
+
+      return {
+        content: [factResource],
       };
     }
   );
