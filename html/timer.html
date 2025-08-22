@@ -302,27 +302,31 @@
 
 
   <script>
-    const TEMPLATE_CONFIG = { "duration": 20 };
+    const TEMPLATE_CONFIG = { "duration": 20, "mode": "timer" };
 
     const TIMER_CONFIG = {
-      defaultInitialTime: TEMPLATE_CONFIG.duration,
+      defaultInitialTime: TEMPLATE_CONFIG.duration || 20,
       soundEnabled: true,
-      progressRingRadius: 90
+      progressRingRadius: 90,
+      mode: TEMPLATE_CONFIG.mode || "timer"
     };
 
     class Timer {
       constructor() {
-        this.initialTime = TIMER_CONFIG.defaultInitialTime;
+        this.mode = TIMER_CONFIG.mode;
+        this.initialTime = this.mode === 'stopwatch' ? 0 : TIMER_CONFIG.defaultInitialTime;
         this.totalTime = this.initialTime;
         this.currentTime = this.initialTime;
+        this.currentMilliseconds = 0; // Track milliseconds for smooth progress
+        this.lastUpdateTime = null; // Track when we last updated for smooth animation
         this.isRunning = false;
         this.isMuted = false;
-        this.mode = 'timer';
         this.interval = null;
 
         this.initializeElements();
         this.bindEvents();
         this.updateDisplay();
+        this.updateMuteButtonVisibility();
       }
 
       initializeElements() {
@@ -365,9 +369,14 @@
       }
 
       setTime( minutes, seconds ) {
+        if ( this.mode === 'stopwatch' ) {
+          // For stopwatch mode, don't allow time setting - it should start at 0
+          return;
+        }
         this.initialTime = minutes * 60 + seconds; // Update the initial time
         this.totalTime = this.initialTime;
         this.currentTime = this.initialTime;
+        this.currentMilliseconds = 0; // Reset milliseconds
         this.updateDisplay();
         this.updateProgress();
       }
@@ -388,18 +397,40 @@
 
       startTimer() {
         this.isRunning = true;
+        this.lastUpdateTime = Date.now();
         this.updatePlayPauseButton();
 
         this.interval = setInterval( () => {
-          this.currentTime--;
-          if ( this.currentTime <= 0 ) {
-            this.currentTime = 0;
-            this.completeTimer();
+          const now = Date.now();
+          const deltaTime = now - this.lastUpdateTime;
+          this.lastUpdateTime = now;
+
+          // Update milliseconds for smooth progress
+          this.currentMilliseconds += deltaTime;
+
+          // Check if we've completed a full second
+          if ( this.currentMilliseconds >= 1000 ) {
+            const secondsElapsed = Math.floor( this.currentMilliseconds / 1000 );
+            this.currentMilliseconds = this.currentMilliseconds % 1000;
+
+            if ( this.mode === 'stopwatch' ) {
+              this.currentTime += secondsElapsed;
+            } else {
+              this.currentTime -= secondsElapsed;
+              if ( this.currentTime <= 0 ) {
+                this.currentTime = 0;
+                this.currentMilliseconds = 0;
+                this.updateDisplay();
+                this.updateProgress();
+                this.completeTimer();
+                return;
+              }
+            }
+            this.updateDisplay();
           }
 
-          this.updateDisplay();
           this.updateProgress();
-        }, 1000 );
+        }, 50 ); // Update every 50ms for smooth animation
       }
 
       pauseTimer() {
@@ -411,11 +442,15 @@
       resetTimer() {
         this.pauseTimer();
         this.currentTime = this.initialTime; // Reset to the initial time, not totalTime
+        this.currentMilliseconds = 0; // Reset milliseconds
         this.updateDisplay();
         this.updateProgress();
       }
 
       async completeTimer() {
+        // Only complete for timer mode, not stopwatch
+        if ( this.mode !== 'timer' ) return;
+
         this.pauseTimer();
 
         for ( let i = 0; i < 4; i++ ) {
@@ -434,7 +469,22 @@
       }
 
       updateProgress() {
-        const progress = this.initialTime > 0 ? ( this.initialTime - this.currentTime ) / this.initialTime : 0;
+        let progress = 0;
+
+        if ( this.mode === 'stopwatch' ) {
+          // Calculate fractional time including milliseconds for smooth animation
+          const fractionalTime = this.currentTime + ( this.currentMilliseconds / 1000 );
+          // For stopwatch, show progress as a percentage of 60 seconds and wrap around
+          const secondsInMinute = fractionalTime % 60;
+          progress = secondsInMinute / 60;
+        } else {
+          // For timer, calculate remaining fractional time (subtract milliseconds for smooth countdown)
+          const fractionalTimeRemaining = Math.max( 0, this.currentTime - ( this.currentMilliseconds / 1000 ) );
+          // Progress should increase as time runs out (from 0 to 1)
+          progress = this.initialTime > 0 ? ( this.initialTime - fractionalTimeRemaining ) / this.initialTime : 0;
+          progress = Math.max( 0, Math.min( 1, progress ) ); // Clamp between 0 and 1
+        }
+
         const offset = this.circumference * progress;
         this.progressRing.style.strokeDasharray = `${offset} ${this.circumference}`;
       }
@@ -469,9 +519,23 @@
         this.muteBtn.classList.toggle( 'muted', this.isMuted );
       }
 
+      updateMuteButtonVisibility() {
+        // Hide mute button for stopwatch mode
+        if ( this.mode === 'stopwatch' ) {
+          this.muteBtn.style.display = 'none';
+        } else {
+          this.muteBtn.style.display = 'flex';
+        }
+      }
+
 
 
       makeEditable() {
+        // Don't allow editing in stopwatch mode
+        if ( this.mode === 'stopwatch' ) {
+          return;
+        }
+
         // Store if timer was running before editing
         this.wasRunningBeforeEdit = this.isRunning;
 
@@ -573,7 +637,7 @@
       }
 
       playSound() {
-        if ( this.isMuted ) return;
+        if ( this.isMuted || this.mode === 'stopwatch' ) return;
 
         // Create audio context and play a pleasant notification sound
         try {

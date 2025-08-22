@@ -29,11 +29,33 @@ export default function createServer() {
         createUIResource,
         "ui://widget/timer",
         timerHtml,
-        { duration }
+        { duration, mode: "timer" }
       );
 
       return {
         content: [timerResource],
+      };
+    }
+  );
+
+  server.registerTool(
+    "stopwatch",
+    {
+      title: "Stopwatch",
+      description: "Start a stopwatch that counts up from zero",
+      inputSchema: {},
+    },
+    async () => {
+      // Create a templated UI resource in stopwatch mode
+      const stopwatchResource = createTemplatedUIResource(
+        createUIResource,
+        "ui://widget/stopwatch",
+        timerHtml,
+        { mode: "stopwatch" }
+      );
+
+      return {
+        content: [stopwatchResource],
       };
     }
   );
