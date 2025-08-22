@@ -4,18 +4,14 @@ import { z } from "zod";
 import { createUIResource } from "@mcp-ui/server";
 // Import generated HTML content with full type safety
 import { timerHtml } from "./generated/html.js";
+// Import our HTML templating utility
+import { createTemplatedUIResource } from "./utils/html-template.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 
 export default function createServer() {
   const server = new McpServer({
     name: "widget-mcp",
     version: "1.0.0",
-  });
-
-  const resource1 = createUIResource({
-    uri: "ui://widget/timer",
-    content: { type: "rawHtml", htmlString: timerHtml },
-    encoding: "blob",
   });
 
   server.registerTool(
@@ -28,8 +24,16 @@ export default function createServer() {
       },
     },
     async ({ duration }) => {
+      // Create a templated UI resource with the duration parameter
+      const timerResource = createTemplatedUIResource(
+        createUIResource,
+        "ui://widget/timer",
+        timerHtml,
+        { duration }
+      );
+
       return {
-        content: [resource1],
+        content: [timerResource],
       };
     }
   );

@@ -302,16 +302,16 @@
 
 
   <script>
-    // Global timer configuration
+    const TEMPLATE_CONFIG = { "duration": 20 };
+
     const TIMER_CONFIG = {
-      defaultInitialTime: 20 * 60, // 20:00 in seconds
+      defaultInitialTime: TEMPLATE_CONFIG.duration,
       soundEnabled: true,
       progressRingRadius: 90
     };
 
     class Timer {
       constructor() {
-        // Use default initial time from config
         this.initialTime = TIMER_CONFIG.defaultInitialTime;
         this.totalTime = this.initialTime;
         this.currentTime = this.initialTime;
