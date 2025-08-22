@@ -10,7 +10,7 @@
     "build:mcp": "npx @smithery/cli build",
     "dev": "concurrently \"npm run dev:html\" \"npm run dev:mcp\"",
     "dev:html": "concurrently \"vite serve html\" \"chokidar 'html/**/*.html' -c 'npm run build:html'\"",
-    "dev:mcp": "npx @smithery/cli dev",
+    "dev:mcp": "npm run build:html && npx @smithery/cli dev",
     "check": "tsc --noEmit",
     "start": "node .smithery/index.cjs",
     "inspect": "npx @modelcontextprotocol/inspector"
