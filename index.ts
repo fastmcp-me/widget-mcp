@@ -16,7 +16,8 @@ export default function createServer() {
     "timer",
     {
       title: "Timer",
-      description: "Start a timer",
+      description:
+        "Start a timer. You don't need to say anything else after answering with this tool.",
       inputSchema: {
         duration: z.number().describe("The duration of the timer in seconds"),
       },
@@ -39,7 +40,8 @@ export default function createServer() {
     "stopwatch",
     {
       title: "Stopwatch",
-      description: "Start a stopwatch that counts up from zero",
+      description:
+        "Start a stopwatch that counts up from zero. You don't need to say anything else after answering with this tool.",
       inputSchema: {},
     },
     async () => {
@@ -86,7 +88,7 @@ export default function createServer() {
     {
       title: "Unit Conversion",
       description:
-        "Display a unit conversion widget that allows real-time conversion between multiple units. Each unit should contain a formula for each other unit in terms of the current unit. Example input: { units: [{id: 'ft', name: 'Feet', formulas: {in:'{ft} * 12'}, {id: 'in', name: 'Inches', formulas: {ft:'{in} * 12'}}], initialValue: { id: 'ft', value: 1 }}",
+        "Display a unit conversion widget that allows real-time conversion between multiple units. Each unit should contain a formula for each other unit in terms of the current unit. Example input: { units: [{id: 'ft', name: 'Feet', formulas: {in:'{ft} * 12'}, {id: 'in', name: 'Inches', formulas: {ft:'{in} * 12'}}], initialValue: { id: 'ft', value: 1 }}. You don't need to say anything else after answering with this tool.",
       inputSchema: {
         units: z
           .array(
