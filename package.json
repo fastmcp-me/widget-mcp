@@ -13,7 +13,8 @@
     "dev:mcp": "npx @smithery/cli dev",
     "watch:html": "chokidar 'html/**/*.html' -c 'npm run build:html'",
     "check": "tsc --noEmit",
-    "start": "node .smithery/index.cjs"
+    "start": "node .smithery/index.cjs",
+    "inspect": "npx @modelcontextprotocol/inspector"
   },
   "dependencies": {
     "@mcp-ui/server": "^5.2.0",
@@ -21,6 +22,7 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
+    "@types/node": "^24.3.0",
     "chokidar-cli": "^3.0.0",
     "concurrently": "^9.1.2",
     "prettier": "^3.4.2",

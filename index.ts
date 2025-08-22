@@ -4,6 +4,7 @@ import { z } from "zod";
 import { createUIResource } from "@mcp-ui/server";
 // Import generated HTML content with full type safety
 import { timerHtml } from "./generated/html.js";
+import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 
 export default function createServer() {
   const server = new McpServer({
@@ -15,9 +16,6 @@ export default function createServer() {
     uri: "ui://my-component/instance-1",
     content: { type: "rawHtml", htmlString: timerHtml },
     encoding: "blob",
-    uiMetadata: {
-      "preferred-frame-size": ["800px", "600px"],
-    },
   });
 
   server.registerTool(
@@ -44,3 +42,20 @@ export default function createServer() {
 
   return server.server;
 }
+
+async function runServer() {
+  const server = createServer();
+  const transport = new StdioServerTransport();
+  await server.connect(transport);
+
+  process.on("SIGINT", async () => {
+    await server.close();
+    process.exit(0);
+  });
+  console.error("MCP Starter Server running on stdio");
+}
+
+runServer().catch((error) => {
+  console.error("Fatal error running server:", error);
+  process.exit(1);
+});
