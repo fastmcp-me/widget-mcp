@@ -8,7 +8,6 @@
     "build": "npm run build:html && npm run build:mcp",
     "build:html": "tsx scripts/build-html.ts",
     "build:mcp": "npx @smithery/cli build",
-    "dev": "concurrently \"npm run dev:html\" \"npm run dev:mcp\"",
     "dev:html": "concurrently \"vite serve html\" \"chokidar 'html/**/*.html' -c 'npm run build:html'\"",
     "dev:mcp": "npm run build:html && npx @smithery/cli dev",
     "check": "tsc --noEmit",
