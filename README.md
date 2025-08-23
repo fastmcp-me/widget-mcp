@@ -39,7 +39,7 @@ Try widget-mcp in the Smithery playground. (TODO: pending Smithery deploy)
 ![Goose Setup](goose-setup.png)
 
 
-## Contributions welcome!
+## Requests for widgets
 
 Here's a few examples of widgets that could be fun to add.
 
