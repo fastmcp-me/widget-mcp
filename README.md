@@ -25,7 +25,7 @@ MCP-UI is new and as of August 2025 is only supported by a few clients.
 
 ### Smithery
 
-Try widget-mcp in the Smithery playground.
+Try widget-mcp in the Smithery playground. (TODO: pending Smithery deploy)
 
 ### Goose
 
