@@ -69,7 +69,3 @@ npm run dev:mcp
 - **[Goose](https://block.github.io/goose/)** - Block's opensource MCP client.
 - **[PulseMCP](https://github.com/[placeholder]/pulsemcp)** - The best way to stay up-to-date on MCP.
 - Maintained by **[Ref.](https://ref.tools)** - Context for your coding agent.
-
-## License
-
-MIT 
