@@ -4,6 +4,8 @@ Add simple widgets to you LLM chat for common situations like timers, conversion
 
 ![widget-mcp](widgets.gif)
 
+Demo video: https://youtu.be/4gfom42vHkc
+
 ## Motivation
 
 MCP-UI opens the door to [breaking the text wall](https://shopify.engineering/mcp-ui-breaking-the-text-wall) from chat UIs we've been using the last few years. The full extent of what's possible is 
