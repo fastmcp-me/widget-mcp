@@ -2,7 +2,7 @@
 
 Add simple widgets to you LLM chat for common situations like timers, conversions and more.
 
-![Widget Demo GIF Placeholder]
+![widget-mcp](widgets.gif)
 
 ## Motivation
 
