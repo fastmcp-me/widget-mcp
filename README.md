@@ -51,7 +51,9 @@ I'm sure you have some cool ideas!
 
 ## Development
 
-To add new widgets, add an template file to the `html` directory and a new tool to `index.ts`
+Adding new widgets should be very easy! All these widgets are HTML pages that can have variables injected (eg. values provided by the LLM). To add new widgets, add an template file to the `html` directory and a new tool to `index.ts`. 
+
+You can probably just prompt "Add a widget html and tool to do <somethingawesome>. Look at index.ts and timer.html for examples of how". 
 
 ```bash
 # Install dependencies
